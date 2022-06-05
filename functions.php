@@ -1,6 +1,35 @@
 <?php
 
-function university_files() {
+function pageBanner( $args = null ): void {
+	if ( ! $args['title'] ) {
+		$args['title'] = get_the_title();
+	}
+	if ( ! $args['subtitle'] ) {
+		$args['subtitle'] = get_field( 'page_banner_subtitle' );
+	}
+	if ( ! $args['photo'] ) {
+		if ( get_field( 'page_banner_background_image' ) ) {
+			$args['photo'] = get_field( 'page_banner_background_image' )['sizes']['pageBanner'];
+		} else {
+			$args['photo'] = get_theme_file_uri( '/images/ocean.jpg' );
+		}
+	}
+
+	?>
+    <div class="page-banner">
+        <div class="page-banner__bg-image"
+             style="background-image: url(<?php echo $args['photo'] ?>)"></div>
+        <div class="page-banner__content container container--narrow">
+            <h1 class="page-banner__title"><?php echo $args['title'] ?></h1>
+            <div class="page-banner__intro">
+                <p><?php echo $args['subtitle']; ?></p>
+            </div>
+        </div>
+    </div>
+	<?php
+}
+
+function university_files(): void {
 	wp_enqueue_script( 'main-university-js', get_theme_file_uri( '/build/index.js' ), array( 'jquery' ), '1.0', true );
 	wp_enqueue_style( 'custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i' );
 	wp_enqueue_style( 'font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' );
@@ -8,7 +37,7 @@ function university_files() {
 	wp_enqueue_style( 'university_extra_styles', get_theme_file_uri( '/build/index.css' ) );
 }
 
-function university_features() {
+function university_features(): void {
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
 	add_image_size( 'professorLandscape', 400, 260, true );
@@ -19,11 +48,11 @@ function university_features() {
 add_action( 'wp_enqueue_scripts', 'university_files' );
 add_action( 'after_setup_theme', 'university_features' );
 
-function university_adjust_queries( $query ) {
+function university_adjust_queries( $query ): void {
 	if ( ! is_admin() and is_post_type_archive( 'program' ) and is_main_query() ) {
 		$query->set( 'orderby', 'title' );
 		$query->set( 'order', 'ASC' );
-		$query->set( 'posts_per_page', -1 );
+		$query->set( 'posts_per_page', - 1 );
 	}
 
 	if ( ! is_admin() and is_post_type_archive( 'event' ) and is_main_query() ) {
